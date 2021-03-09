@@ -1,0 +1,12 @@
+=====
+first
+=====
+
+<Hello/>
+
+---
+
+(source_file
+  (element
+    (EmptyElemTag
+      (Name))))

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Rule PUBLIC "sailpoint.dtd" "sailpoint.dtd">
+<Rule language="beanshell" name="ManTech Workday Before Provisioning Rule" type="BeforeProvisioning">
+  <Description>
+    This beforeProvisioning rule checks to see if Workday is ready to receive an
+    update to the email address.  If it is not, it removes the attribute request
+    from the plan.
+  </Description>
+  <ReferencedRules>
+    <Reference class="sailpoint.object.Rule" name="SPCONF Common Rules Library"/>
+  </ReferencedRules>
+  <Signature>
+    <Inputs>
+      <Argument name="log">
+        <Description>
+          The log object associated with the SailPointContext.
+        </Description>
+      </Argument>
+      <Argument name="context">
+        <Description>
+          A sailpoint.api.SailPointContext object that can be used to query the
+          database if necessary.
+        </Description>
+      </Argument>
+      <Argument name="plan">
+        <Description>
+          The ProvisioningPlan object on its way to the Connector.
+        </Description>
+      </Argument>
+      <Argument name="application">
+        <Description>
+          The application object that references this before script.
+        </Description>
+      </Argument>
+    </Inputs>
+  </Signature>
+  <Source>
+    <![CDATA[
+    Log logger = LogFactory.getLog("rule.beforeprovisioning.workday");
+    String WORKDAY = "Workday";
+    String IS_ACCEPTING = "UPDATE_WORK_EMAIL";
+    String EMAIL = "EMAIL_ADDRESS_WORK";
+    String TRUE = "Y";
+
+    if (logger.isTraceEnabled()) {
+      logger.trace("Entering BeforeProvisioning Rule for Workday with plan [" + (plan == null ? "" : plan.toString()) + "] application [" + (application == null ? "" : application.toString()) + "]");
+    }
+
+    if ((plan != null) && (plan != void)) {
+      Identity identity = plan.getIdentity();
+      String isAccepting = getLinkAttribute(context, identity, WORKDAY, IS_ACCEPTING);
+      if ((isAccepting == null) || !TRUE.equalsIgnoreCase(isAccepting)) {
+        logger.trace("Workday is not accepting updates to this identity's email address.");
+        plan = removeMatchingAttributeRequest(plan, WORKDAY, EMAIL);
+      } else if (Util.isNullOrEmpty(getLinkAttributeFromPlan(plan, WORKDAY, EMAIL))) {
+        logger.trace("Removing empty email address from plan");
+        plan = removeMatchingAttributeRequest(plan, WORKDAY, EMAIL);
+      }
+    }
+    logger.trace("Exiting BeforeProvisioning Rule for Workday");
+    ]]>
+  </Source>
+</Rule>

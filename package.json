@@ -1,0 +1,17 @@
+{
+  "name": "tree-sitter-xml",
+  "version": "1.0.0",
+  "description": "Tree sitter parser for XML",
+  "main": "index.js",
+  "scripts": {
+    "test": ""
+  },
+  "author": "Rob Outterson",
+  "license": "ISC",
+  "dependencies": {
+    "nan": "^2.12.1"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.13.16"
+  }
+}
